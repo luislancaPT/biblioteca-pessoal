@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Pessoal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat-badge {
+            background: #f0f0f0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-badge .number {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            background: #10b981;
+        }
+
+        button.secondary:hover {
+            background: #059669;
+        }
+
+        button.danger {
+            background: #ef4444;
+        }
+
+        button.danger:hover {
+            background: #dc2626;
+        }
+
+        .filter-bar {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+            font-size: 24px;
+        }
+
+        .close-btn {
+            background: none;
+            color: #999;
+            font-size: 28px;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        input[type="text"], input[type="file"], input[type="number"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        #video-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            background: black;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        #video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .scanner-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 100px;
+            border: 3px solid #00ff00;
+            border-radius: 8px;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+        }
+
+        .capture-btn-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .capture-btn {
+            background: #10b981;
+            padding: 15px 30px;
+            font-size: 18px;
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .origin-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        .origin-physical {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .origin-digital {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .book-card-header {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .book-cover {
+            width: 80px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #f0f0f0;
+        }
+
+        .book-info {
+            flex: 1;
+        }
+
+        .book-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .book-author {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .keyword {
+            background: #e8eaf6;
+            color: #667eea;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .book-detail {
+            padding: 20px;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-section h3 {
+            color: #667eea;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .detail-section p {
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .insight-box {
+            background: #fff9e6;
+            border-left: 4px solid #ffd700;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            background: white;
+            padding: 60px 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .settings-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .settings-section label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .delete-btn {
+            background: #ff4444;
+            margin-top: 10px;
+        }
+
+        .delete-btn:hover {
+            background: #cc0000;
+        }
+
+        .export-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .books-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+
+            .export-options {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                gap: 10px;
+            }
+
+            .stat-badge {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Biblioteca Pessoal</h1>
+            <p class="subtitle">Catalogação inteligente com múltiplas fontes de dados</p>
+            <div class="stats-bar">
+                <div class="stat-badge">
+                    📖 <span class="number" id="total-count">0</span> total
+                </div>
+                <div class="stat-badge">
+                    📱 <span class="number" id="physical-count">0</span> físicos
+                </div>
+                <div class="stat-badge">
+                    💾 <span class="number" id="digital-count">0</span> digitais
+                </div>
+            </div>
+        </header>
+
+        <div class="filter-bar">
+            <span style="color: #666; font-weight: 600;">Filtrar por origem:</span>
+            <button class="filter-btn active" onclick="filterBooks('all')">
+                📚 Todos
+            </button>
+            <button class="filter-btn" onclick="filterBooks('physical')">
+                📱 Livros Físicos
+            </button>
+            <button class="filter-btn" onclick="filterBooks('digital')">
+                💾 Ficheiros Digitais
+            </button>
+        </div>
+
+        <div class="actions">
+            <button onclick="openScanner()">
+                📷 Digitalizar Código
+            </button>
+            <button onclick="openManualEntry()">
+                🔍 Buscar por ISBN
+            </button>
+            <button onclick="openManualAdd()">
+                ✏️ Adicionar Manualmente
+            </button>
+            <button class="secondary" onclick="openExportImport()">
+                💾 Exportar/Importar
+            </button>
+            <button onclick="openSettings()">
+                ⚙️ Configurações
+            </button>
+        </div>
+
+        <div id="books-container" class="books-grid"></div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p id="loading-text">A processar...</p>
+        </div>
+    </div>
+
+    <!-- Modal Scanner -->
+    <div id="scanner-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Digitalizar Código de Barras</h2>
+                <button class="close-btn" onclick="closeScanner()">×</button>
+            </div>
+            <div class="info-box">
+                📱 Livro será marcado como <strong>Físico</strong>
+            </div>
+            <div id="video-container">
+                <video id="video" autoplay playsinline></video>
+                <div class="scanner-overlay"></div>
+                <canvas id="canvas" style="display:none;"></canvas>
+            </div>
+            <div class="capture-btn-container">
+                <button class="capture-btn" onclick="captureBarcode()">
+                    📸 Capturar Código
+                </button>
+            </div>
+            <p style="text-align: center; color: #666; margin-top: 10px;">
+                Posicione o código dentro da área verde e clique capturar
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal Manual Entry -->
+    <div id="manual-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Buscar por ISBN</h2>
+                <button class="close-btn" onclick="closeManualEntry()">×</button>
+            </div>
+            <div class="info-box">
+                📱 Livro será marcado como <strong>Físico</strong><br>
+                🔍 Busca em múltiplas fontes: Google Books, Open Library, ISBN DB
+            </div>
+            <label>ISBN (10 ou 13 dígitos)</label>
+            <input type="text" id="isbn-input" placeholder="Ex: 9780134685991 ou 0134685997" maxlength="13">
+            <button onclick="searchByISBN()" style="width: 100%;">🔍 Buscar Livro</button>
+        </div>
+    </div>
+
+    <!-- Modal Manual Add -->
+    <div id="manual-add-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Livro Manualmente</h2>
+                <button class="close-btn" onclick="closeManualAdd()">×</button>
+            </div>
+            <div class="warning-box">
+                ⚠️ Use isto apenas se o ISBN não for encontrado automaticamente
+            </div>
+            
+            <div class="form-group">
+                <label>ISBN *</label>
+                <input type="text" id="manual-isbn" placeholder="9780134685991">
+            </div>
+
+            <div class="form-group">
+                <label>Título *</label>
+                <input type="text" id="manual-title" placeholder="Clean Code">
+            </div>
+
+            <div class="form-group">
+                <label>Autores (separados por vírgula) *</label>
+                <input type="text" id="manual-authors" placeholder="Robert C. Martin">
+            </div>
+
+            <div class="form-group">
+                <label>Editora</label>
+                <input type="text" id="manual-publisher" placeholder="Prentice Hall">
+            </div>
+
+            <div class="form-group">
+                <label>Ano de Publicação</label>
+                <input type="number" id="manual-year" placeholder="2008" min="1000" max="2100">
+            </div>
+
+            <div class="form-group">
+                <label>Número de Páginas</label>
+                <input type="number" id="manual-pages" placeholder="464">
+            </div>
+
+            <div class="form-group">
+                <label>Descrição</label>
+                <textarea id="manual-description" placeholder="Breve descrição do livro..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Origem</label>
+                <select id="manual-source" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                    <option value="physical">📱 Livro Físico</option>
+                    <option value="digital">💾 Ficheiro Digital</option>
+                </select>
+            </div>
+
+            <button onclick="saveManualBook()" style="width: 100%;">✅ Adicionar Livro</button>
+        </div>
+    </div>
+
+    <!-- Modal Export/Import -->
+    <div id="export-import-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Exportar/Importar Dados</h2>
+                <button class="close-btn" onclick="closeExportImport()">×</button>
+            </div>
+
+            <div class="settings-section">
+                <label>📤 Exportar Biblioteca</label>
+                <div class="export-options">
+                    <button onclick="exportToJSON()" style="width: 100%;">
+                        📄 Exportar JSON
+                    </button>
+                    <button onclick="exportToMarkdown()" style="width: 100%;">
+                        📝 Exportar Markdown
+                    </button>
+                </div>
+                <div class="info-box">
+                    <strong>JSON:</strong> Backup completo<br>
+                    <strong>Markdown:</strong> Formato legível
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <label>📥 Importar Ficheiros Digitais</label>
+                <input type="file" id="import-file" accept=".json" onchange="importFile(event)">
+                <div class="info-box">
+                    Importe ficheiros JSON convertidos. Livros marcados como <strong>💾 Digitais</strong>.
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <label>🗑️ Gestão de Dados</label>
+                <button class="danger" onclick="clearAllData()" style="width: 100%;">
+                    Apagar Toda a Biblioteca
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Settings -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Configurações</h2>
+                <button class="close-btn" onclick="closeSettings()">×</button>
+            </div>
+            <div class="settings-section">
+                <label>Chave API da Anthropic (Claude)</label>
+                <input type="text" id="api-key-input" placeholder="sk-ant-api03-...">
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                    Obtenha em <a href="https://console.anthropic.com/" target="_blank" style="color: #667eea;">console.anthropic.com</a><br>
+                    Opcional: Gera resumos e insights com IA
+                </p>
+            </div>
+            <button onclick="saveSettings()" style="width: 100%;">Guardar Configurações</button>
+        </div>
+    </div>
+
+    <!-- Modal Book Detail -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2>Detalhes do Livro</h2>
+                <button class="close-btn" onclick="closeDetail()">×</button>
+            </div>
+            <div id="book-detail-content"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@zxing/library@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+    <script>
+        let books = JSON.parse(localStorage.getItem('books') || '[]');
+        let apiKey = localStorage.getItem('anthropic_api_key') || '';
+        let currentStream = null;
+        let currentFilter = 'all';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderBooks();
+            updateStats();
+        });
+
+        function updateStats() {
+            const total = books.length;
+            const physical = books.filter(b => b.source === 'physical').length;
+            const digital = books.filter(b => b.source === 'digital').length;
+
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('physical-count').textContent = physical;
+            document.getElementById('digital-count').textContent = digital;
+        }
+
+        function filterBooks(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderBooks();
+        }
+
+        function renderBooks() {
+            const container = document.getElementById('books-container');
+            let filteredBooks = books;
+            
+            if (currentFilter === 'physical') {
+                filteredBooks = books.filter(b => b.source === 'physical');
+            } else if (currentFilter === 'digital') {
+                filteredBooks = books.filter(b => b.source === 'digital');
+            }
+
+            if (filteredBooks.length === 0) {
+                const message = currentFilter === 'all' 
+                    ? 'Nenhum livro na biblioteca' 
+                    : `Nenhum livro ${currentFilter === 'physical' ? 'físico' : 'digital'} encontrado`;
+                
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="#999" viewBox="0 0 24 24">
+                            <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
+                        </svg>
+                        <h3>${message}</h3>
+                        <p>Comece digitalizando, buscando por ISBN ou adicionando manualmente</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredBooks.map(book => {
+                const originBadge = book.source === 'physical' 
+                    ? '<div class="origin-badge origin-physical">📱 Físico</div>'
+                    : '<div class="origin-badge origin-digital">💾 Digital</div>';
+
+                return `
+                    <div class="book-card" onclick="showBookDetail('${book.id}')">
+                        ${originBadge}
+                        <div class="book-card-header">
+                            <img src="${book.coverImageURL || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="120" viewBox="0 0 80 120"%3E%3Crect fill="%23f0f0f0" width="80" height="120"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="30" fill="%23999" text-anchor="middle" dy=".3em"%3E📖%3C/text%3E%3C/svg%3E'}" 
+                                 class="book-cover" 
+                                 alt="${book.title}">
+                            <div class="book-info">
+                                <div class="book-title">${book.title}</div>
+                                <div class="book-author">${book.authors.join(', ')}</div>
+                                <div class="keywords">
+                                    ${book.keywords.slice(0, 3).map(k => `<span class="keyword">${k}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // SCANNER MELHORADO
+        async function openScanner() {
+            document.getElementById('scanner-modal').classList.add('active');
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
+                });
+                currentStream = stream;
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+
+                // Iniciar Quagga para melhor deteção no iPhone
+                video.addEventListener('loadedmetadata', () => {
+                    Quagga.init({
+                        inputStream: {
+                            type: 'LiveStream',
+                            target: video,
+                            constraints: {
+                                facingMode: 'environment'
+                            }
+                        },
+                        decoder: {
+                            readers: ['ean_reader', 'ean_8_reader', 'code_128_reader', 'upc_reader']
+                        }
+                    }, function(err) {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+                        Quagga.start();
+                    });
+
+                    Quagga.onDetected(function(result) {
+                        const code = result.codeResult.code;
+                        if (code && code.length >= 10) {
+                            Quagga.stop();
+                            closeScanner();
+                            processISBN(code, 'physical');
+                        }
+                    });
+                });
+            } catch (error) {
+                alert('Erro ao aceder à câmara: ' + error.message);
+                closeScanner();
+            }
+        }
+
+        function captureBarcode() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0);
+            
+            // Tentar ler com ZXing também
+            const codeReader = new ZXing.BrowserMultiFormatReader();
+            codeReader.decodeFromCanvas(canvas).then(result => {
+                const code = result.text;
+                closeScanner();
+                processISBN(code, 'physical');
+            }).catch(err => {
+                alert('Não consegui ler o código. Tente:\n1. Melhorar a iluminação\n2. Aproximar/afastar\n3. Usar "Buscar por ISBN" e digitar manualmente');
+            });
+        }
+
+        function closeScanner() {
+            document.getElementById('scanner-modal').classList.remove('active');
+            if (Quagga) {
+                Quagga.stop();
+            }
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+        }
+
+        function openManualEntry() {
+            document.getElementById('manual-modal').classList.add('active');
+            document.getElementById('isbn-input').value = '';
+            document.getElementById('isbn-input').focus();
+        }
+
+        function closeManualEntry() {
+            document.getElementById('manual-modal').classList.remove('active');
+        }
+
+        async function searchByISBN() {
+            const isbn = document.getElementById('isbn-input').value.trim().replace(/[-\s]/g, '');
+            if (!isbn || isbn.length < 10) {
+                alert('Por favor, insira um ISBN válido (10 ou 13 dígitos)');
+                return;
+            }
+            closeManualEntry();
+            processISBN(isbn, 'physical');
+        }
+
+        async function processISBN(isbn, source = 'physical') {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loading-text').textContent = 'A buscar livro em múltiplas fontes...';
+
+            try {
+                let bookData = null;
+                
+                // Tentar Google Books
+                document.getElementById('loading-text').textContent = '🔍 Buscando no Google Books...';
+                try {
+                    bookData = await fetchFromGoogleBooks(isbn);
+                } catch (e) {
+                    console.log('Google Books falhou:', e);
+                }
+
+                // Se falhar, tentar Open Library
+                if (!bookData) {
+                    document.getElementById('loading-text').textContent = '🔍 Buscando na Open Library...';
+                    try {
+                        bookData = await fetchFromOpenLibrary(isbn);
+                    } catch (e) {
+                        console.log('Open Library falhou:', e);
+                    }
+                }
+
+                // Se falhar, tentar ISBN DB
+                if (!bookData) {
+                    document.getElementById('loading-text').textContent = '🔍 Buscando no ISBN DB...';
+                    try {
+                        bookData = await fetchFromISBNDB(isbn);
+                    } catch (e) {
+                        console.log('ISBN DB falhou:', e);
+                    }
+                }
+
+                if (!bookData) {
+                    throw new Error('Livro não encontrado em nenhuma fonte. Adicione manualmente!');
+                }
+
+                // Gerar conteúdo IA (opcional)
+                let aiContent = { summary: '', keywords: [], insights: [] };
+                if (apiKey && bookData.description) {
+                    document.getElementById('loading-text').textContent = '🤖 Gerando resumo com IA...';
+                    try {
+                        aiContent = await generateAIContent(bookData);
+                    } catch (e) {
+                        console.log('IA falhou:', e);
+                    }
+                }
+                
+                const book = {
+                    id: Date.now().toString(),
+                    isbn: isbn,
+                    title: bookData.title,
+                    authors: bookData.authors,
+                    publisher: bookData.publisher,
+                    publishedDate: bookData.publishedDate,
+                    description: bookData.description,
+                    coverImageURL: bookData.coverImageURL,
+                    pageCount: bookData.pageCount,
+                    categories: bookData.categories,
+                    summary: aiContent.summary,
+                    keywords: aiContent.keywords,
+                    insights: aiContent.insights,
+                    source: source,
+                    dateAdded: new Date().toISOString()
+                };
+
+                books.unshift(book);
+                localStorage.setItem('books', JSON.stringify(books));
+                renderBooks();
+                updateStats();
+                
+                alert(`✅ Livro adicionado: ${book.title}`);
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                const addManually = confirm(`❌ ${error.message}\n\n📝 Deseja adicionar este livro manualmente?`);
+                if (addManually) {
+                    document.getElementById('manual-isbn').value = isbn;
+                    openManualAdd();
+                }
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function fetchFromGoogleBooks(isbn) {
+            const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
+            const data = await response.json();
+
+            if (!data.items || data.items.length === 0) {
+                throw new Error('Não encontrado no Google Books');
+            }
+
+            const volumeInfo = data.items[0].volumeInfo;
+
+            return {
+                title: volumeInfo.title || 'Título desconhecido',
+                authors: volumeInfo.authors || [],
+                publisher: volumeInfo.publisher || '',
+                publishedDate: volumeInfo.publishedDate || '',
+                description: volumeInfo.description || '',
+                coverImageURL: volumeInfo.imageLinks?.thumbnail || '',
+                pageCount: volumeInfo.pageCount || null,
+                categories: volumeInfo.categories || []
+            };
+        }
+
+        async function fetchFromOpenLibrary(isbn) {
+            const response = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
+            const data = await response.json();
+            
+            const key = `ISBN:${isbn}`;
+            if (!data[key]) {
+                throw new Error('Não encontrado na Open Library');
+            }
+
+            const book = data[key];
+            
+            return {
+                title: book.title || 'Título desconhecido',
+                authors: book.authors ? book.authors.map(a => a.name) : [],
+                publisher: book.publishers ? book.publishers[0].name : '',
+                publishedDate: book.publish_date || '',
+                description: book.notes || '',
+                coverImageURL: book.cover?.medium || book.cover?.small || '',
+                pageCount: book.number_of_pages || null,
+                categories: book.subjects ? book.subjects.map(s => s.name).slice(0, 5) : []
+            };
+        }
+
+        async function fetchFromISBNDB(isbn) {
+            // ISBN DB requer API key paga, mas pode implementar se tiver
+            throw new Error('ISBN DB não configurado');
+        }
+
+        async function generateAIContent(bookData) {
+            const prompt = `Analise este livro e forneça uma resposta em português de Portugal no formato JSON exato abaixo:
+
+Título: ${bookData.title}
+Autores: ${bookData.authors.join(', ')}
+Descrição: ${bookData.description}
+
+Formato de resposta (apenas JSON válido):
+{
+    "resumo": "Resumo conciso de 2-3 parágrafos",
+    "palavras_chave": ["palavra1", "palavra2", "palavra3", "palavra4", "palavra5"],
+    "insights": ["insight 1", "insight 2", "insight 3"]
+}`;
+
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': apiKey,
+                    'anthropic-version': '2023-06-01'
+                },
+                body: JSON.stringify({
+                    model: 'claude-sonnet-4-20250514',
+                    max_tokens: 1500,
+                    messages: [{ role: 'user', content: prompt }]
+                })
+            });
+
+            if (!response.ok) throw new Error('Erro na API');
+
+            const data = await response.json();
+            const text = data.content[0].text.replace(/```json|```/g, '').trim();
+            const aiResponse = JSON.parse(text);
+
+            return {
+                summary: aiResponse.resumo,
+                keywords: aiResponse.palavras_chave,
+                insights: aiResponse.insights
+            };
+        }
+
+        // ADICIONAR MANUALMENTE
+        function openManualAdd() {
+            document.getElementById('manual-add-modal').classList.add('active');
+        }
+
+        function closeManualAdd() {
+            document.getElementById('manual-add-modal').classList.remove('active');
+        }
+
+        function saveManualBook() {
+            const isbn = document.getElementById('manual-isbn').value.trim();
+            const title = document.getElementById('manual-title').value.trim();
+            const authors = document.getElementById('manual-authors').value.trim();
+
+            if (!isbn || !title || !authors) {
+                alert('Por favor, preencha pelo menos ISBN, Título e Autores');
+                return;
+            }
+
+            const book = {
+                id: Date.now().toString(),
+                isbn: isbn,
+                title: title,
+                authors: authors.split(',').map(a => a.trim()),
+                publisher: document.getElementById('manual-publisher').value.trim(),
+                publishedDate: document.getElementById('manual-year').value.trim(),
+                description: document.getElementById('manual-description').value.trim(),
+                coverImageURL: '',
+                pageCount: parseInt(document.getElementById('manual-pages').value) || null,
+                categories: [],
+                summary: '',
+                keywords: [],
+                insights: [],
+                source: document.getElementById('manual-source').value,
+                dateAdded: new Date().toISOString()
+            };
+
+            books.unshift(book);
+            localStorage.setItem('books', JSON.stringify(books));
+            renderBooks();
+            updateStats();
+            closeManualAdd();
+            
+            alert(`✅ Livro "${title}" adicionado com sucesso!`);
+            
+            // Limpar formulário
+            document.getElementById('manual-isbn').value = '';
+            document.getElementById('manual-title').value = '';
+            document.getElementById('manual-authors').value = '';
+            document.getElementById('manual-publisher').value = '';
+            document.getElementById('manual-year').value = '';
+            document.getElementById('manual-pages').value = '';
+            document.getElementById('manual-description').value = '';
+        }
+
+        function showBookDetail(bookId) {
+            const book = books.find(b => b.id === bookId);
+            if (!book) return;
+
+            const originBadge = book.source === 'physical'
+                ? '<span style="background: #dcfce7; color: #166534; padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 600;">📱 Livro Físico</span>'
+                : '<span style="background: #dbeafe; color: #1e40af; padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 600;">💾 Ficheiro Digital</span>';
+
+            const content = `
+                <div class="book-detail">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        ${originBadge}
+                    </div>
+                    
+                    <img src="${book.coverImageURL || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="250" height="350" viewBox="0 0 250 350"%3E%3Crect fill="%23f0f0f0" width="250" height="350"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="60" fill="%23999" text-anchor="middle" dy=".3em"%3E📖%3C/text%3E%3C/svg%3E'}" 
+                         style="width: 100%; max-width: 250px; height: auto; border-radius: 8px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto;"
+                         alt="${book.title}">
+                    
+                    <h2 style="color: #667eea; margin-bottom: 15px;">${book.title}</h2>
+                    
+                    ${book.authors.length > 0 ? `<div class="info-row">👤 ${book.authors.join(', ')}</div>` : ''}
+                    ${book.publisher ? `<div class="info-row">🏢 ${book.publisher}</div>` : ''}
+                    ${book.publishedDate ? `<div class="info-row">📅 ${book.publishedDate}</div>` : ''}
+                    ${book.pageCount ? `<div class="info-row">📄 ${book.pageCount} páginas</div>` : ''}
+                    <div class="info-row">🔢 ISBN: ${book.isbn}</div>
+                    
+                    ${book.description ? `
+                        <div class="detail-section">
+                            <h3>Descrição</h3>
+                            <p>${book.description}</p>
+                        </div>
+                    ` : ''}
+                    
+                    ${book.summary ? `
+                        <div class="detail-section">
+                            <h3>Resumo (IA)</h3>
+                            <p>${book.summary}</p>
+                        </div>
+                    ` : ''}
+                    
+                    ${book.keywords.length > 0 ? `
+                        <div class="detail-section">
+                            <h3>Palavras-chave</h3>
+                            <div class="keywords">
+                                ${book.keywords.map(k => `<span class="keyword">${k}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${book.insights.length > 0 ? `
+                        <div class="detail-section">
+                            <h3>💡 Insights</h3>
+                            ${book.insights.map(i => `<div class="insight-box">${i}</div>`).join('')}
+                        </div>
+                    ` : ''}
+
+                    <button class="delete-btn" onclick="deleteBook('${book.id}')" style="width: 100%;">
+                        🗑️ Eliminar Livro
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('book-detail-content').innerHTML = content;
+            document.getElementById('detail-modal').classList.add('active');
+        }
+
+        function closeDetail() {
+            document.getElementById('detail-modal').classList.remove('active');
+        }
+
+        function deleteBook(bookId) {
+            if (!confirm('Tem certeza que deseja eliminar este livro?')) return;
+            books = books.filter(b => b.id !== bookId);
+            localStorage.setItem('books', JSON.stringify(books));
+            renderBooks();
+            updateStats();
+            closeDetail();
+        }
+
+        function openSettings() {
+            document.getElementById('settings-modal').classList.add('active');
+            document.getElementById('api-key-input').value = apiKey;
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.remove('active');
+        }
+
+        function saveSettings() {
+            apiKey = document.getElementById('api-key-input').value.trim();
+            localStorage.setItem('anthropic_api_key', apiKey);
+            alert('Configurações guardadas!');
+            closeSettings();
+        }
+
+        function openExportImport() {
+            document.getElementById('export-import-modal').classList.add('active');
+        }
+
+        function closeExportImport() {
+            document.getElementById('export-import-modal').classList.remove('active');
+        }
+
+        function exportToJSON() {
+            if (books.length === 0) {
+                alert('Não há livros para exportar');
+                return;
+            }
+            const dataStr = JSON.stringify(books, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `biblioteca-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            alert(`${books.length} livros exportados!`);
+        }
+
+        function exportToMarkdown() {
+            if (books.length === 0) {
+                alert('Não há livros para exportar');
+                return;
+            }
+
+            let md = `# Biblioteca Pessoal\n\n**Total:** ${books.length} livros\n**Data:** ${new Date().toLocaleDateString('pt-PT')}\n\n---\n\n`;
+
+            books.forEach((book, i) => {
+                md += `## ${i + 1}. ${book.title}\n\n`;
+                md += `- **ISBN:** ${book.isbn}\n`;
+                md += `- **Autores:** ${book.authors.join(', ')}\n`;
+                if (book.publisher) md += `- **Editora:** ${book.publisher}\n`;
+                if (book.publishedDate) md += `- **Ano:** ${book.publishedDate}\n`;
+                md += `- **Origem:** ${book.source === 'physical' ? '📱 Físico' : '💾 Digital'}\n\n`;
+                if (book.summary) md += `### Resumo\n\n${book.summary}\n\n`;
+                md += `---\n\n`;
+            });
+
+            const blob = new Blob([md], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `biblioteca-${new Date().toISOString().split('T')[0]}.md`;
+            link.click();
+            URL.revokeObjectURL(url);
+            alert('Exportado em Markdown!');
+        }
+
+        function importFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedBooks = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedBooks)) throw new Error('Formato inválido');
+
+                    let added = 0;
+                    importedBooks.forEach(b => {
+                        if (!books.some(existing => existing.isbn === b.isbn)) {
+                            b.source = 'digital';
+                            b.id = Date.now().toString() + Math.random();
+                            books.push(b);
+                            added++;
+                        }
+                    });
+
+                    localStorage.setItem('books', JSON.stringify(books));
+                    renderBooks();
+                    updateStats();
+                    closeExportImport();
+                    alert(`✅ ${added} livros importados!`);
+                } catch (error) {
+                    alert('Erro ao importar: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function clearAllData() {
+            if (!confirm('⚠️ Apagar TODA a biblioteca?')) return;
+            if (!confirm('Última confirmação!')) return;
+            books = [];
+            localStorage.setItem('books', JSON.stringify(books));
+            renderBooks();
+            updateStats();
+            closeExportImport();
+            alert('Biblioteca limpa.');
+        }
+
+        document.getElementById('isbn-input')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchByISBN();
+        });
+    </script>
+</body>
+</html>
